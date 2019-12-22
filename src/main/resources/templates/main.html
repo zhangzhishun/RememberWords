@@ -1,0 +1,190 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <!-- bootstrap.bundle.min.js 用于弹窗、提示、下拉菜单，包含了 popper.min.js -->
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<br>
+<div class="container">
+    <h2>单词笔记本</h2>
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#home">主页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#addWords">记录单词</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#findWords">查看单词</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#mine">我的</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div id="home" class="container tab-pane active"><br>
+            <h3>主页</h3>
+            <p>欢迎用户 <span style="color: red" th:text="${session.userName}"></span> 一起来使用本网站记下你的单词吧！</p>
+        </div>
+
+
+        <div id="addWords" class="container tab-pane fade"><br>
+            <h3>记录单词</h3>
+            <form id="uploadWordsForm">
+                <div class="form-group">
+                    <label for="wordsSpell">请输入单词:</label>
+                    <input type="text" class="form-control" id="wordsSpell" name="wordsSpell" placeholder="请输入单词">
+                </div>
+                <div class="form-group">
+                    <label for="wordInterpretation">请输入释义:</label>
+                    <textarea class="form-control" rows="5" id="wordInterpretation" name="wordInterpretation" placeholder="请输入释义"></textarea>
+                </div>
+                <input type="button" class="btn btn-primary" id="uploadWords" value="上传单词"  >
+            </form>
+        </div>
+
+
+        <div id="findWords" class="container tab-pane fade"><br>
+          <h2>所有单词</h2>
+          <div class="card" style="margin: 10px" th:each="note:${notes}">
+            <div class="card-body">
+              <h4 class="card-title" th:text="@{'单词: ' + ${note['wordsSpell']}}"></h4>
+              <p class="card-text" th:text="@{'释义: ' + ${note['wordInterpretation']}}"></p>
+              <a class="btn btn-info" th:href="@{'./updateWords/'+${note['wordsId']}}" >修改</a>
+              <a class="btn btn-danger" th:href="@{'./delWordsByWordsId/'+${note['wordsId']}}">删除</a>
+            </div>
+          </div>
+        </div>
+
+
+        <div id="mine" class="container tab-pane fade"><br>
+            <h3>我的信息</h3><br>
+            <p>用户名：<span th:text="${session.userName}"></span></p>
+            <button id="btn_updatePassword" type="button" class="btn btn-primary">修改密码</button>
+
+            <!-- 修改密码模态框 -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="prUserPassword">请输入原密码</label>
+                                <input type="text" id="prUserPassword" class="form-control"  placeholder="请输入原密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserPassword">请输入新密码</label>
+                                <input type="text" id="newUserPassword" class="form-control"  placeholder="请输入新密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserPasswordAgain">请再一次输入新密码</label>
+                                <input type="text" id="newUserPasswordAgain" class="form-control"  placeholder="请再一次输入新密码">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+                            <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-floppy-disk " aria-hidden="true"></span>重置密码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br><hr>
+            <!--<button type="button" class="btn">基本按钮</button>
+            <button type="button" class="btn btn-secondary">次要按钮</button>
+            <button type="button" class="btn btn-success">成功</button>
+            <button type="button" class="btn btn-info">信息</button>
+            <button type="button" class="btn btn-warning">警告</button>
+            <button type="button" class="btn btn-danger">危险</button>
+            <button type="button" class="btn btn-dark">黑色</button>
+            <button type="button" class="btn btn-light">浅色</button>
+            <button type="button" class="btn btn-link">链接</button>-->
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //注册新增按钮的事件
+    $("#btn_updatePassword").click(function () {
+        $('#myModal').modal();
+    });
+
+    $(function() {
+        /* 添加单词 */
+        $("#uploadWords").click (function() {
+            if($('#wordsSpell').val()=='' ||  $('#wordInterpretation').val()==''){
+                alert('您有未填项！');
+            }else {
+                $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "./uploadWords" ,
+                    data: $('#uploadWordsForm').serialize(),
+                    success: function (result) {
+                        console.log(result);//打印服务端返回的数据(调试用)
+                        if (result == "OK") {
+                            alert('上传成功！');
+                            location.reload()
+                        }
+                    },
+                    error : function() {
+                        alert("上传异常，请稍后重试！");
+                        location.reload()
+                    }
+                });
+            }
+        });
+        /* 修改密码 */
+        $("#btn_submit").click (function() {
+            if($('#prUserPassword').val()=='' ||  $('#newUserPassword').val()=='' ||  $('#newUserPasswordAgain').val()==''){
+                alert('您有未填项！');
+            }else {
+                if($('#newUserPassword').val() == $('#newUserPasswordAgain').val()){
+                    $.ajax({
+                        type: "POST",//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: "./updateUserPassword" ,
+                        data:{'prUserPassword' : $('#prUserPassword').val(), 'newUserPassword' : $('#newUserPassword').val()},
+                        success: function (result) {
+                            console.log(result);//打印服务端返回的数据(调试用)
+                            if (result == 1) {
+                                alert('修改成功！');
+                                location.reload()
+                            }else if (result == -1) {
+                                alert('原密码错误！');
+                            }else{
+                                alert('更新事务执行错误！');
+                            }
+                        },
+                        error : function() {
+                            alert("网络异常，请稍后重试！");
+                        }
+                    });
+                }else{
+                    alert('两次输入的密码不相同');
+                }
+            }
+        });
+    });
+</script>
+</body>
+
+</html>
