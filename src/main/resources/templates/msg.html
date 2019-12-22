@@ -4,13 +4,10 @@
     <title>Title</title>
     <!-- 新 Bootstrap4 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
-    <script language="javascript">
-        var out_trade_no = [[${msg}]];
-        if(out_trade_no){
-            alert("操作成功");
-        }else{
-            alert("操作失败");
-        }
+    <script th:inline="javascript">
+        // 输出传过来的消息
+        var msg = [[${msg}]];
+        alert(msg);
         // 返回上一页并刷新
         self.location=document.referrer;
     </script>

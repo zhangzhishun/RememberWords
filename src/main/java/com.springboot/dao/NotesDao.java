@@ -30,4 +30,10 @@ public interface NotesDao {
      * 修改记录
      * */
     boolean updateNotes(Notes notes);
+
+    /*
+    * 获取所有单词
+    * */
+    List<Map<String,Object>> getAllNotesAndWords();
+
 }

@@ -64,10 +64,39 @@
             <div class="card-body">
               <h4 class="card-title" th:text="@{'单词: ' + ${note['wordsSpell']}}"></h4>
               <p class="card-text" th:text="@{'释义: ' + ${note['wordInterpretation']}}"></p>
-              <a class="btn btn-info" th:href="@{'./updateWords/'+${note['wordsId']}}" >修改</a>
+              <button name="btn_updateWords" th:onclick="@{'changeDate(\''+${note['wordsId']}+'\',\''+${note['wordsSpell']}+'\',\''+${note['wordInterpretation']}+'\')'}"
+                      type="button" class="btn btn-info">修改</button>
               <a class="btn btn-danger" th:href="@{'./delWordsByWordsId/'+${note['wordsId']}}">删除</a>
             </div>
           </div>
+
+            <!-- 修改单词模态框 -->
+            <div class="modal fade" id="updateWordsModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="updateWordsId" class="form-control">
+                            <div class="form-group">
+                                <label for="newUserPassword">请输入单词</label>
+                                <input type="text" id="newWordsSpell" class="form-control"  placeholder="请输入单词">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserPasswordAgain">请输入释义</label>
+                                <input type="text" id="newWordInterpretation" class="form-control"  placeholder="请输入释义">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+                            <button type="button" id="btn_submitWords" class="btn btn-primary" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-floppy-disk " aria-hidden="true"></span>确认修改
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -77,7 +106,7 @@
             <button id="btn_updatePassword" type="button" class="btn btn-primary">修改密码</button>
 
             <!-- 修改密码模态框 -->
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+            <div class="modal fade" id="updatePasswordModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -99,7 +128,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
-                            <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal">
+                            <button type="button" id="btn_submitPassword" class="btn btn-primary" data-dismiss="modal">
                                 <span class="glyphicon glyphicon-floppy-disk " aria-hidden="true"></span>重置密码
                             </button>
                         </div>
@@ -122,9 +151,18 @@
 </div>
 
 <script type="text/javascript">
-    //注册新增按钮的事件
+
+    /* 更新密码模态框初始化值 */
+    function changeDate(updateWordsId,wordsSpell,wordInterpretation){
+        $('#updateWordsId').val(updateWordsId);
+        $('#newWordsSpell').val(wordsSpell);
+        $('#newWordInterpretation').val(wordInterpretation);
+        $('#updateWordsModal').modal();
+    }
+
+    // 更新密码模态框的调用
     $("#btn_updatePassword").click(function () {
-        $('#myModal').modal();
+        $('#updatePasswordModal').modal();
     });
 
     $(function() {
@@ -152,8 +190,33 @@
                 });
             }
         });
+
+        /* 修改单词 */
+        $("#btn_submitWords").click (function() {
+            if($('#newWordsSpell').val()=='' ){
+                alert('单词不可为空！');
+            }else {
+                $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "./updateWords" ,
+                    data:{'wordsId' : $('#updateWordsId').val(),'newWordsSpell' : $('#newWordsSpell').val(), 'newWordInterpretation' : $('#newWordInterpretation').val()},
+                    success: function (result) {
+                        console.log(result);//打印服务端返回的数据(调试用)
+                        if (result == "OK") {
+                            alert('修改成功！');
+                            location.reload()
+                        }
+                    },
+                    error : function() {
+                        alert("网络异常，请稍后重试！");
+                    }
+                });
+            }
+        });
+
         /* 修改密码 */
-        $("#btn_submit").click (function() {
+        $("#btn_submitPassword").click (function() {
             if($('#prUserPassword').val()=='' ||  $('#newUserPassword').val()=='' ||  $('#newUserPasswordAgain').val()==''){
                 alert('您有未填项！');
             }else {
@@ -185,6 +248,7 @@
         });
     });
 </script>
+
 </body>
 
 </html>

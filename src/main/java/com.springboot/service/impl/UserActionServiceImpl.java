@@ -16,7 +16,7 @@ import java.util.Map;
  * @version 1.0.0
  */
 @Service
-public class UserActionImpl implements UserActionService {
+public class UserActionServiceImpl implements UserActionService {
     @Autowired
     WordsDao wordsDaoImpl;
     @Autowired
@@ -64,4 +64,5 @@ public class UserActionImpl implements UserActionService {
         words.setWordInterpretation(wordInterpretation);
         return wordsDaoImpl.updateWords(words);
     }
+
 }

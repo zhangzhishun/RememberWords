@@ -33,7 +33,7 @@ public class MainController {
             System.out.println(map);
         }
         model.addAttribute("notes",notes);
-        return "main";
+        return "user/main";
     }
 
     /** 上传单词 */
@@ -61,11 +61,10 @@ public class MainController {
     /** 更新单词 -- weiwancheng */
     @PostMapping("/updateWords")
     @ResponseBody
-    public HttpStatus updateWords(@RequestParam("wordsId") String wordsId, @RequestParam("wordsSpell") String wordsSpell,
-                               @RequestParam("wordInterpretation") String wordInterpretation, HttpSession session){
-        System.out.println( wordsId+wordsSpell+wordInterpretation);
-        String userName = session.getAttribute("userName").toString();
-        Boolean re = userActionServiceImpl.updateWords(wordsId,wordsSpell,wordInterpretation);
+    public HttpStatus updateWords(@RequestParam("wordsId") String wordsId, @RequestParam("newWordsSpell") String newWordsSpell,
+                               @RequestParam("newWordInterpretation") String newWordInterpretation, HttpSession session){
+        System.out.println( wordsId+newWordsSpell+newWordInterpretation);
+        Boolean re = userActionServiceImpl.updateWords(wordsId,newWordsSpell,newWordInterpretation);
         System.out.println(re);
         if(re){
             return HttpStatus.OK;
@@ -78,7 +77,7 @@ public class MainController {
     @GetMapping("delWordsByWordsId/{wordsId}")
     public String delNotesById(@PathVariable("wordsId") String wordsId,Model model){
         boolean result = userActionServiceImpl.delNotesAndWordsByWordsId(wordsId);
-        model.addAttribute("msg",result);
+        model.addAttribute("msg",result?"删除成功":"删除失败");
         return "msg";
     }
 }

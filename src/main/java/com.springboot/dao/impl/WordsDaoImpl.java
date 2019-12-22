@@ -27,7 +27,7 @@ public class WordsDaoImpl implements WordsDao {
 
     @Override
     public List<Map<String, Object>> getWordsAndNotesByWordsId(String wordsId) {
-        return jdbcTemplateImpl.queryForList("SELECT * FROM words LEFT JOIN notes on notes.wordsId = words.wordsId " +
+        return jdbcTemplateImpl.queryForList("SELECT * FROM words INNER JOIN notes on notes.wordsId = words.wordsId " +
                 "AND words.wordsId = ?",wordsId);
     }
 
@@ -53,6 +53,6 @@ public class WordsDaoImpl implements WordsDao {
 
     @Override
     public boolean updateWords(Words words) {
-        return jdbcTemplateImpl.update("UPDATE words SET getWordsSpell = ?,getWordInterpretation = ? WHERE getWordsId = ?",words.getWordsSpell(),words.getWordInterpretation(),words.getWordsId() )>0;
+        return jdbcTemplateImpl.update("UPDATE words SET wordsSpell = ?,wordInterpretation = ? WHERE wordsId = ?",words.getWordsSpell(),words.getWordInterpretation(),words.getWordsId() )>0;
     }
 }

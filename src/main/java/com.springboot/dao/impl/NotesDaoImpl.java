@@ -20,8 +20,13 @@ public class NotesDaoImpl implements NotesDao {
 
     @Override
     public List<Map<String,Object>> getNotesAndWordsByuserId(String userId) {
-        return jdbcTemplateImpl.queryForList("SELECT * FROM notes LEFT JOIN words on notes.wordsId = words.wordsId " +
+        return jdbcTemplateImpl.queryForList("SELECT * FROM words INNER JOIN notes on notes.wordsId = words.wordsId " +
                 "AND notes.userId = ?",userId);
+    }
+
+    @Override
+    public List<Map<String,Object>> getAllNotesAndWords() {
+        return jdbcTemplateImpl.queryForList("SELECT * FROM words INNER JOIN notes on notes.wordsId = words.wordsId");
     }
 
     @Override

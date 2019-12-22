@@ -1,0 +1,365 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <!-- bootstrap.bundle.min.js 用于弹窗、提示、下拉菜单，包含了 popper.min.js -->
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<br>
+<div class="container">
+    <h2>单词笔记本-管理端</h2>
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#home">主页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#addWords">记录单词</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#findWords">查看单词</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#adminUser">用户管理</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#mine">我的</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div id="home" class="container tab-pane active"><br>
+            <h3>主页</h3>
+            <p>欢迎用户 <span style="color: red" th:text="${session.adminName}"></span> 一起来使用本网站记下你的单词吧！</p>
+        </div>
+
+
+        <div id="addWords" class="container tab-pane fade"><br>
+            <h3>记录单词</h3>
+            <form id="uploadWordsForm">
+                <div class="form-group">
+                    <label for="wordsSpell">请输入单词:</label>
+                    <input type="text" class="form-control" id="wordsSpell" name="wordsSpell" placeholder="请输入单词">
+                </div>
+                <div class="form-group">
+                    <label for="wordInterpretation">请输入释义:</label>
+                    <textarea class="form-control" rows="5" id="wordInterpretation" name="wordInterpretation" placeholder="请输入释义"></textarea>
+                </div>
+                <input type="button" class="btn btn-primary" id="uploadWords" value="上传单词"  >
+            </form>
+        </div>
+
+
+        <div id="findWords" class="container tab-pane fade"><br>
+          <h2>所有单词</h2>
+          <div class="card" style="margin: 10px" th:each="note:${notes}">
+            <div class="card-body">
+              <h4 class="card-title" th:text="@{'单词: ' + ${note['wordsSpell']}}"></h4>
+              <p class="card-text" th:text="@{'释义: ' + ${note['wordInterpretation']}}"></p>
+              <button name="btn_updateWords" th:onclick="@{'changeDate(\''+${note['wordsId']}+'\',\''+${note['wordsSpell']}+'\',\''+${note['wordInterpretation']}+'\')'}"
+                      type="button" class="btn btn-info">修改</button>
+              <a class="btn btn-danger" th:href="@{'../delWordsByWordsId/'+${note['wordsId']}}">删除</a>
+            </div>
+          </div>
+
+            <!-- 修改单词模态框 -->
+            <div class="modal fade" id="updateWordsModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="updateWordsId" class="form-control">
+                            <div class="form-group">
+                                <label for="newWordsSpell">请输入单词</label>
+                                <input type="text" id="newWordsSpell" class="form-control"  placeholder="请输入单词">
+                            </div>
+                            <div class="form-group">
+                                <label for="newWordInterpretation">请输入释义</label>
+                                <input type="text" id="newWordInterpretation" class="form-control"  placeholder="请输入释义">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+                            <button type="button" id="btn_submitWords" class="btn btn-primary" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-floppy-disk " aria-hidden="true"></span>确认修改
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminUser" class="container tab-pane fade"><br>
+            <div class="container">
+                <div>
+                    <div style="float:left;" >
+                        <h3>用户管理</h3>
+                    </div>
+                    <div style="float:right;" >
+                        <a class="btn btn-light" href="../login">添加用户</a>
+                    </div>
+                </div>
+                <br>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>用户ID</th>
+                        <th>用户名</th>
+                        <th>用户性别</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user:${users}">
+                        <td th:text="${user['userId']}"></td>
+                        <td th:text="${user['userName']}"></td>
+                        <td th:text="${user['userSex']}"></td>
+                        <td><button name="btn_updateWords"
+                                    th:onclick="@{'updateUser(\''+${user['userId']}+'\',\''+${user['userName']}
+                                    +'\',\''+${user['userPassword']}+'\',\''+${user['userSex']}+'\')'}"
+                                    type="button" class="btn btn-info">修改</button>
+                            <a class="btn btn-danger" th:href="@{'./delUserByUserId/'+${user['userId']}}">删除</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <!-- 修改用户信息模态框 -->
+            <div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="updateUserId" class="form-control">
+                            <div class="form-group">
+                                <label for="prAdminPassword">用户名</label>
+                                <input type="text" id="newUserName" class="form-control"  placeholder="请输入原密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="newAdminPassword">用户密码</label>
+                                <input type="text" id="newUserPassword" class="form-control"  placeholder="请输入新密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="newAdminPasswordAgain">用户性别</label>
+                                <input type="text" id="newUserSex" class="form-control"  placeholder="该用户未选择性别">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+                            <button type="button" id="btn_submitUser" class="btn btn-primary" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-floppy-disk " aria-hidden="true"></span>修改用户
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mine" class="container tab-pane fade"><br>
+            <h3>我的信息</h3><br>
+            <p>用户名：<span th:text="${session.adminName}"></span></p>
+            <button id="btn_updatePassword" type="button" class="btn btn-primary">修改密码</button>
+
+            <!-- 修改密码模态框 -->
+            <div class="modal fade" id="updatePasswordModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="prAdminPassword">请输入原密码</label>
+                                <input type="text" id="prAdminPassword" class="form-control"  placeholder="请输入原密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="newAdminPassword">请输入新密码</label>
+                                <input type="text" id="newAdminPassword" class="form-control"  placeholder="请输入新密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="newAdminPasswordAgain">请再一次输入新密码</label>
+                                <input type="text" id="newAdminPasswordAgain" class="form-control"  placeholder="请再一次输入新密码">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+                            <button type="button" id="btn_submitPassword" class="btn btn-primary" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-floppy-disk " aria-hidden="true"></span>重置密码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br><hr>
+            <!--<button type="button" class="btn">基本按钮</button>
+            <button type="button" class="btn btn-secondary">次要按钮</button>
+            <button type="button" class="btn btn-success">成功</button>
+            <button type="button" class="btn btn-info">信息</button>
+            <button type="button" class="btn btn-warning">警告</button>
+            <button type="button" class="btn btn-danger">危险</button>
+            <button type="button" class="btn btn-dark">黑色</button>
+            <button type="button" class="btn btn-light">浅色</button>
+            <button type="button" class="btn btn-link">链接</button>-->
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    /* 更新管理员密码模态框初始化值 */
+    function changeDate(updateWordsId,wordsSpell,wordInterpretation){
+        $('#updateWordsId').val(updateWordsId);
+        $('#newWordsSpell').val(wordsSpell);
+        $('#newWordInterpretation').val(wordInterpretation);
+        $('#updateWordsModal').modal();
+    }
+
+    /* 更新用户信息模态框初始化值 */
+    function updateUser(userId,userName,userPassword,userSex){
+        console.log(userId+userName+userPassword+userSex);
+        $('#updateUserId').val(userId);
+        $('#newUserName').val(userName);
+        $('#newUserPassword').val(userPassword);
+        $('#newUserSex').val(userSex=='null'?'':userSex);
+        $('#updateUserModal').modal();
+    }
+
+    // 更新密码模态框的调用
+    $("#btn_updatePassword").click(function () {
+        $('#updatePasswordModal').modal();
+    });
+
+    $(function() {
+        /* 添加单词 */
+        $("#uploadWords").click (function() {
+            if($('#wordsSpell').val()=='' ||  $('#wordInterpretation').val()==''){
+                alert('您有未填项！');
+            }else {
+                $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "./uploadWords" ,
+                    data: $('#uploadWordsForm').serialize(),
+                    success: function (result) {
+                        console.log(result);//打印服务端返回的数据(调试用)
+                        if (result == "OK") {
+                            alert('上传成功！');
+                            location.reload()
+                        }
+                    },
+                    error : function() {
+                        alert("上传异常，请稍后重试！");
+                        location.reload()
+                    }
+                });
+            }
+        });
+
+        /* 修改单词 */
+        $("#btn_submitWords").click (function() {
+            if($('#newWordsSpell').val()=='' ){
+                alert('单词不可为空！');
+            }else {
+                $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "../updateWords" ,
+                    data:{'wordsId' : $('#updateWordsId').val(),'newWordsSpell' : $('#newWordsSpell').val(), 'newWordInterpretation' : $('#newWordInterpretation').val()},
+                    success: function (result) {
+                        console.log(result);//打印服务端返回的数据(调试用)
+                        if (result == "OK") {
+                            alert('修改成功！');
+                            location.reload()
+                        }
+                    },
+                    error : function() {
+                        alert("网络异常，请稍后重试！");
+                    }
+                });
+            }
+        });
+
+        /* 修改用户 */
+        $("#btn_submitUser").click (function() {
+            if($('#newUserName').val()=='' || $('#newUserPassword').val()==''){
+                alert('用户名和密码不可为空！');
+            }else {
+                $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "./updateUser" ,
+                    data:{'updateUserId' : $('#updateUserId').val(),'newUserName' : $('#newUserName').val(),
+                        'newUserPassword' : $('#newUserPassword').val(), 'newUserSex' : $('#newUserSex').val()},
+                    success: function (result) {
+                        console.log(result);//打印服务端返回的数据(调试用)
+                        if (result == 1) {
+                            alert('修改成功！');
+                            location.reload()
+                        }else if (result == -1) {
+                            alert('用户名冲突！');
+                        }else{
+                            alert('更新事务执行错误！');
+                        }
+                    },
+                    error : function() {
+                        alert("网络异常，请稍后重试！");
+                    }
+                });
+            }
+        });
+
+        /* 修改密码 */
+        $("#btn_submitPassword").click (function() {
+            if($('#prUserPassword').val()=='' ||  $('#newUserPassword').val()=='' ||  $('#newUserPasswordAgain').val()==''){
+                alert('您有未填项！');
+            }else {
+                if($('#newUserPassword').val() == $('#newUserPasswordAgain').val()){
+                    $.ajax({
+                        type: "POST",//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: "./updateAdminPassword" ,
+                        data:{'prAdminPassword' : $('#prAdminPassword').val(), 'newAdminPassword' : $('#newAdminPassword').val()},
+                        success: function (result) {
+                            console.log(result);//打印服务端返回的数据(调试用)
+                            if (result == 1) {
+                                alert('修改成功！');
+                                location.reload()
+                            }else if (result == -1) {
+                                alert('原密码错误！');
+                            }else{
+                                alert('更新事务执行错误！');
+                            }
+                        },
+                        error : function() {
+                            alert("网络异常，请稍后重试！");
+                        }
+                    });
+                }else{
+                    alert('两次输入的密码不相同');
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 package com.springboot.service.impl;
 
 import com.springboot.dao.UserDao;
-import com.springboot.service.UserLoginService;
+import com.springboot.service.UserLoginAndRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.Map;
  * @version 1.0.0
  */
 @Service
-public class UserLoginServiceImpl implements UserLoginService {
+public class UserLoginAndRegisterServiceImpl implements UserLoginAndRegisterService {
     @Autowired
     UserDao userDaoImpl;
 
@@ -25,4 +25,10 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
         return false;
     }
+
+    @Override
+    public Integer userRegister(String userName, String userPassword, String userSex) {
+        return userDaoImpl.addUser(userName,userPassword,userSex);
+    }
+
 }
